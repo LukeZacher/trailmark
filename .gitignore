@@ -1,0 +1,12 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vs/
+.idea/
+.vscode/
+
+# Local secrets
+*.env
+appsettings.*.local.json
