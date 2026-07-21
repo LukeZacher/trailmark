@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="TrailMark.Api/TrailMark.Api.csproj" />
+  <Project Path="TrailMark.Domain/TrailMark.Domain.csproj" />
+  <Project Path="TrailMark.Infrastructure/TrailMark.Infrastructure.csproj" />
+</Solution>

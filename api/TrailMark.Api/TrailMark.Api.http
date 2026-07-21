@@ -1,0 +1,6 @@
+@TrailMark.Api_HostAddress = http://localhost:5194
+
+GET {{TrailMark.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
