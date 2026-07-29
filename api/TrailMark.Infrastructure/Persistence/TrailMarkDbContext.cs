@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TrailMark.Domain.Entities;
+using TrailMark.Infrastructure.Persistence.Identity;
 
 namespace TrailMark.Infrastructure.Persistence;
 
-public class TrailMarkDbContext(DbContextOptions<TrailMarkDbContext> options) : DbContext(options)
+public class TrailMarkDbContext(DbContextOptions<TrailMarkDbContext> options)
+    : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<JobApplication> JobApplications => Set<JobApplication>();
 
@@ -14,6 +18,7 @@ public class TrailMarkDbContext(DbContextOptions<TrailMarkDbContext> options) : 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder); // Identity configures its tables first
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(TrailMarkDbContext).Assembly);
     }
 }

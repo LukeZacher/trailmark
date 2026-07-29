@@ -5,7 +5,7 @@ namespace TrailMark.Domain.Entities;
 public class JobApplication
 {
     public int Id { get; set; }
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
     public required string JobTitle { get; set; }
     public required string EmployerName { get; set; }
     public ApplicationStatus ApplicationStatus { get; set; } // e.g., interviewing
@@ -20,6 +20,6 @@ public class JobApplication
     public decimal? MaxSalary { get; set; }
     public string? Notes { get; set; }
 
-    public DateTimeOffset CreatedOn { get; set; }
-    public DateTimeOffset ModifiedOn { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
 }

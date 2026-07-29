@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TrailMark.Domain.Entities;
+using TrailMark.Infrastructure.Persistence.Identity;
 
 namespace TrailMark.Infrastructure.Persistence.Configurations;
 
@@ -23,5 +24,11 @@ public class JobApplicationConfiguration : IEntityTypeConfiguration<JobApplicati
         builder.Property(a => a.Notes).HasMaxLength(4000);
 
         builder.HasIndex(a => a.UserId);
+
+        builder
+            .HasOne<AppUser>()
+            .WithMany()
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

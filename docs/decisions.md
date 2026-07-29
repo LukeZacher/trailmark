@@ -12,6 +12,16 @@ Currently HTTP only, to be fixed
 
 Chose the mainstream option, "anemic domain model" critique exists
 
+### TrustServerCertificate should not be true on production
+
+### Local DB is SQL Server Express; fine for dev, production uses a hosted database
+
+### Add currency type field to JobApplication
+
+### Anemic domain model.
+
+JobApplication exposes public setters on every property, so any code can put any field into any state. Alternative: private setters plus methods that express real operations (MarkApplied(), RecordOffer(...)), so invalid states can't be constructed. Deferred until auth and CRUD land — revisit before the entity gains real business rules.
+
 ## Made Decisions
 
 ### Monorepo
@@ -55,3 +65,10 @@ Reasoning: Long-term support (LTS) release - 3 years of security patches vs 18 m
 Drawback: Newer than most tutorials and libraries
 Alternative: .NET 8
 Decision Made: 7/20/26
+
+### Primary Constructors
+
+Reasoning: Removes noise, modern .NET standard, use explicit constructors when constructor needs actual logic
+Drawback: Can accidentally reassign an injected dependency
+Alternative: Explicit constructors
+Decision Made: 7/21/26
