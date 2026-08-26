@@ -1,8 +1,9 @@
+using TrailMark.Domain.Abstractions;
 using TrailMark.Domain.Enums;
 
 namespace TrailMark.Domain.Entities;
 
-public class JobApplication
+public class JobApplication : IAuditable
 {
     public int Id { get; set; }
     public Guid UserId { get; set; }

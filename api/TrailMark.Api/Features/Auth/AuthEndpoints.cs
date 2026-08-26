@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using TrailMark.Infrastructure.Persistence.Identity;
 
@@ -63,5 +64,27 @@ public static class AuthEndpoints
                 return invalidCredentials;
             }
         );
+
+        group
+            .MapGet(
+                "/me",
+                async (ClaimsPrincipal claims, UserManager<AppUser> userManager) =>
+                {
+                    AppUser? user = await userManager.GetUserAsync(claims);
+
+                    if (user is null)
+                    {
+                        return Results.Problem(
+                            statusCode: StatusCodes.Status401Unauthorized,
+                            detail: "Could not find user."
+                        );
+                    }
+
+                    AuthResponse response = user.ToAuthResponse();
+
+                    return Results.Ok(response);
+                }
+            )
+            .RequireAuthorization();
     }
 }
