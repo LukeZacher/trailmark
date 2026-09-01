@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TrailMark.Api.Features.Auth;
@@ -52,6 +53,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
         new JsonStringEnumConverter(namingPolicy: null, allowIntegerValues: false)
     );
 });
+
+builder.Services.AddValidatorsFromAssemblyContaining<CreateJobApplicationRequestValidator>();
 
 WebApplication app = builder.Build();
 

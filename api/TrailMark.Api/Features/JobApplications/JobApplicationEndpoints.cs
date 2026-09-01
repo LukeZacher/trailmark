@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using TrailMark.Api.Extensions;
+using TrailMark.Api.Filters;
 using TrailMark.Domain.Entities;
 using TrailMark.Infrastructure.Persistence;
 
@@ -13,31 +14,36 @@ public static class JobApplicationEndpoints
     {
         RouteGroupBuilder group = app.MapGroup("/job-applications").RequireAuthorization();
 
-        group.MapPost(
-            "",
-            async Task<CreatedAtRoute<JobApplicationResponse>> (
-                CreateJobApplicationRequest request,
-                ClaimsPrincipal claims,
-                TrailMarkDbContext dbContext
-            ) =>
-            {
-                Guid userId = claims.GetRequiredUserId();
+        group
+            .MapPost(
+                "",
+                async Task<CreatedAtRoute<JobApplicationResponse>> (
+                    CreateJobApplicationRequest request,
+                    ClaimsPrincipal claims,
+                    TrailMarkDbContext dbContext
+                ) =>
+                {
+                    Guid userId = claims.GetRequiredUserId();
 
-                JobApplication jobApplication = request.ToEntity(userId);
+                    JobApplication jobApplication = request.ToEntity(userId);
 
-                dbContext.JobApplications.Add(jobApplication);
+                    dbContext.JobApplications.Add(jobApplication);
 
-                await dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync();
 
-                JobApplicationResponse response = jobApplication.ToResponse();
+                    JobApplicationResponse response = jobApplication.ToResponse();
 
-                return TypedResults.CreatedAtRoute(
-                    response,
-                    "GetJobApplicationById",
-                    new { id = response.Id }
-                );
-            }
-        );
+                    return TypedResults.CreatedAtRoute(
+                        response,
+                        "GetJobApplicationById",
+                        new { id = response.Id }
+                    );
+                }
+            )
+            .AddEndpointFilter<
+                RouteHandlerBuilder,
+                ValidationFilter<CreateJobApplicationRequest>
+            >();
 
         group
             .MapGet(
@@ -89,47 +95,52 @@ public static class JobApplicationEndpoints
             }
         );
 
-        group.MapPut(
-            "/{id:int}",
-            async Task<Results<Ok<JobApplicationResponse>, NotFound>> (
-                int id,
-                UpdateJobApplicationRequest request,
-                ClaimsPrincipal claims,
-                TrailMarkDbContext dbContext
-            ) =>
-            {
-                Guid userId = claims.GetRequiredUserId();
-
-                JobApplication? jobApplication =
-                    await dbContext.JobApplications.FirstOrDefaultAsync(ja =>
-                        ja.Id == id && ja.UserId == userId
-                    );
-
-                if (jobApplication is null)
+        group
+            .MapPut(
+                "/{id:int}",
+                async Task<Results<Ok<JobApplicationResponse>, NotFound>> (
+                    int id,
+                    UpdateJobApplicationRequest request,
+                    ClaimsPrincipal claims,
+                    TrailMarkDbContext dbContext
+                ) =>
                 {
-                    return TypedResults.NotFound();
+                    Guid userId = claims.GetRequiredUserId();
+
+                    JobApplication? jobApplication =
+                        await dbContext.JobApplications.FirstOrDefaultAsync(ja =>
+                            ja.Id == id && ja.UserId == userId
+                        );
+
+                    if (jobApplication is null)
+                    {
+                        return TypedResults.NotFound();
+                    }
+
+                    jobApplication.JobTitle = request.JobTitle;
+                    jobApplication.EmployerName = request.EmployerName;
+                    jobApplication.ApplicationStatus = request.ApplicationStatus;
+                    jobApplication.JobPostingUrl = request.JobPostingUrl;
+                    jobApplication.AppliedOn = request.AppliedOn;
+                    jobApplication.Location = request.Location;
+                    jobApplication.WorkEnvironment = request.WorkEnvironment;
+                    jobApplication.EmploymentType = request.EmploymentType;
+                    jobApplication.SalaryPeriod = request.SalaryPeriod;
+                    jobApplication.MinSalary = request.MinSalary;
+                    jobApplication.MaxSalary = request.MaxSalary;
+                    jobApplication.Notes = request.Notes;
+
+                    await dbContext.SaveChangesAsync();
+
+                    JobApplicationResponse response = jobApplication.ToResponse();
+
+                    return TypedResults.Ok(response);
                 }
-
-                jobApplication.JobTitle = request.JobTitle;
-                jobApplication.EmployerName = request.EmployerName;
-                jobApplication.ApplicationStatus = request.ApplicationStatus;
-                jobApplication.JobPostingUrl = request.JobPostingUrl;
-                jobApplication.AppliedOn = request.AppliedOn;
-                jobApplication.Location = request.Location;
-                jobApplication.WorkEnvironment = request.WorkEnvironment;
-                jobApplication.EmploymentType = request.EmploymentType;
-                jobApplication.SalaryPeriod = request.SalaryPeriod;
-                jobApplication.MinSalary = request.MinSalary;
-                jobApplication.MaxSalary = request.MaxSalary;
-                jobApplication.Notes = request.Notes;
-
-                await dbContext.SaveChangesAsync();
-
-                JobApplicationResponse response = jobApplication.ToResponse();
-
-                return TypedResults.Ok(response);
-            }
-        );
+            )
+            .AddEndpointFilter<
+                RouteHandlerBuilder,
+                ValidationFilter<UpdateJobApplicationRequest>
+            >();
 
         group.MapDelete(
             "/{id:int}",
