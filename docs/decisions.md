@@ -120,15 +120,19 @@ Keeps the connection string out of the repo and Git history. Plain-text local st
 Decided On: 8/10/26
 
 ### Endpoint routes use plural kebab-case noun, no verbs (POST /job-applications)
+
 Decided On: 8/21/26
 
 ### Immutable DTOs, mutable entities
+
 Decided On: 8/21/26
 
 ### Audit timestamps stamped centrally via a SaveChangesAsync override + IAuditable marker interface, one UtcNow per batch, Added sets both, Modified sets UpdatedAt only
+
 Decided On: 8/21/26
 
 ### Broken-invariant guards throw InvalidOperationException rather than returning client-facing status codes; GetRequiredUserId reads the id claim off ClaimsPrincipal (no UserManager round-trip) and throws if absent/unparseable.
+
 Decided On: 8/21/26
 
 ---
@@ -146,6 +150,8 @@ Currently HTTP only. Now higher priority because it's coupled to cookie auth —
 ### TrustServerCertificate must not be true in production
 
 Dev-only convenience; a production cert must be properly trusted.
+
+### Web Proxy config "Secure": false only in development
 
 ### Production database
 

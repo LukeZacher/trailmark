@@ -73,7 +73,10 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapAuthEndpoints();
-app.MapJobApplicationEndpoints();
+// Add /api prefix to every endpoint
+RouteGroupBuilder api = app.MapGroup("/api");
+
+api.MapAuthEndpoints();
+api.MapJobApplicationEndpoints();
 
 app.Run();
