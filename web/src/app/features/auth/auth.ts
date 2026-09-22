@@ -8,6 +8,6 @@ export class Auth {
   private readonly http = inject(HttpClient);
 
   getCurrentUser(): Observable<AuthResponse> {
-    return this.http.get<AuthResponse>('/api/auth/me', { withCredentials: true });
+    return this.http.get<AuthResponse>('/api/auth/me');
   }
 }
