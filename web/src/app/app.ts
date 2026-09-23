@@ -1,10 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { Auth } from './features/auth/auth';
 import { AuthResponse } from './features/auth/auth-response';
 
 @Component({
-  imports: [],
+  imports: [RouterOutlet],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',
