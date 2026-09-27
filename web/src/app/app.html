@@ -1,3 +1,6 @@
 <h1>TrailMark</h1>
 <p>{{ auth.user()?.email }}</p>
+@if (auth.isAuthenticated()) {
+  <button type="button" (click)="onLogout()">Log out</button>
+}
 <router-outlet />

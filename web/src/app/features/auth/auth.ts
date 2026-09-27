@@ -31,4 +31,10 @@ export class Auth {
       .post<AuthResponse>(`${this.baseUrl}/login`, request)
       .pipe(tap((user) => this.currentUser.set(user)));
   }
+
+  logout(): Observable<void> {
+    return this.http
+      .post<void>(`${this.baseUrl}/logout`, null)
+      .pipe(tap(() => this.currentUser.set(null)));
+  }
 }

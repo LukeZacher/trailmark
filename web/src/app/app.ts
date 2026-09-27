@@ -10,4 +10,8 @@ import { Auth } from './features/auth/auth';
 })
 export class App {
   protected readonly auth = inject(Auth);
+
+  protected onLogout(): void {
+    this.auth.logout().subscribe();
+  }
 }

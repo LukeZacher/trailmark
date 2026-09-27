@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using TrailMark.Infrastructure.Persistence.Identity;
 
@@ -62,6 +63,15 @@ public static class AuthEndpoints
                 }
 
                 return invalidCredentials;
+            }
+        );
+
+        group.MapPost(
+            "/logout",
+            async Task<NoContent> (SignInManager<AppUser> signInManager) =>
+            {
+                await signInManager.SignOutAsync();
+                return TypedResults.NoContent();
             }
         );
 
