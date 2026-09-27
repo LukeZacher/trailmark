@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { email, form, FormField, FormRoot, required } from '@angular/forms/signals';
+import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Auth } from '../auth';
 import { LoginRequest } from '../login-request';
@@ -13,8 +14,10 @@ import { LoginRequest } from '../login-request';
 })
 export class Login {
   private readonly auth = inject(Auth);
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
-  protected readonly model = signal<LoginRequest>({ email: '', password: '' });
+  private readonly model = signal<LoginRequest>({ email: '', password: '' });
   protected readonly serverError = signal<string | null>(null);
 
   protected readonly loginForm = form(
@@ -31,6 +34,9 @@ export class Login {
 
           try {
             await firstValueFrom(this.auth.login(this.model()));
+
+            const returnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl') ?? '/';
+            await this.router.navigateByUrl(returnUrl);
           } catch (error) {
             this.serverError.set(
               error instanceof HttpErrorResponse && error.status === 401

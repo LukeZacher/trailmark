@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { Auth } from './features/auth/auth';
 
 @Component({
@@ -10,8 +10,13 @@ import { Auth } from './features/auth/auth';
 })
 export class App {
   protected readonly auth = inject(Auth);
+  private readonly router = inject(Router);
 
   protected onLogout(): void {
-    this.auth.logout().subscribe();
+    this.auth.logout().subscribe({
+      next: () => {
+        this.router.navigateByUrl('/login');
+      },
+    });
   }
 }

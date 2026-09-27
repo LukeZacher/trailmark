@@ -1,0 +1,13 @@
+@if (jobApplications.isLoading()) {
+  <p>Loading...</p>
+} @else if (jobApplications.error()) {
+  <p>Could not load your applications.</p>
+} @else {
+  <ul>
+    @for (application of jobApplications.value(); track application.id) {
+      <li>{{ application.jobTitle }} - {{ application.employerName }}</li>
+    } @empty {
+      <li>No applications yet.</li>
+    }
+  </ul>
+}
