@@ -3,11 +3,12 @@ import { Component, inject, signal } from '@angular/core';
 import { email, form, FormField, FormRoot, required } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { FieldError } from '../../../shared/field-error/field-error';
 import { Auth } from '../auth';
 import { LoginRequest } from '../login-request';
 
 @Component({
-  imports: [FormField, FormRoot],
+  imports: [FormField, FormRoot, FieldError],
   selector: 'app-login',
   styleUrl: './login.scss',
   templateUrl: './login.html',

@@ -1,11 +1,8 @@
 <form [formRoot]="loginForm">
   <label for="email">Email</label>
   <input id="email" type="email" autocomplete="username" [formField]="loginForm.email" />
-  @if (loginForm.email().invalid() && loginForm.email().touched()) {
-    @for (error of loginForm.email().errors(); track error.kind) {
-      <p>{{ error.message }}</p>
-    }
-  }
+  <app-field-error [field]="loginForm.email" />
+
   <label for="password">Password</label>
   <input
     id="password"
@@ -13,11 +10,8 @@
     autocomplete="current-password"
     [formField]="loginForm.password"
   />
-  @if (loginForm.password().invalid() && loginForm.password().touched()) {
-    @for (error of loginForm.password().errors(); track error.kind) {
-      <p>{{ error.message }}</p>
-    }
-  }
+  <app-field-error [field]="loginForm.password" />
+
   @if (serverError()) {
     <p>{{ serverError() }}</p>
   }
