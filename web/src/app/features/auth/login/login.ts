@@ -14,9 +14,9 @@ import { LoginRequest } from '../login-request';
   templateUrl: './login.html',
 })
 export class Login {
+  private readonly activatedRoute = inject(ActivatedRoute);
   private readonly auth = inject(Auth);
   private readonly router = inject(Router);
-  private readonly activatedRoute = inject(ActivatedRoute);
 
   private readonly model = signal<LoginRequest>({ email: '', password: '' });
   protected readonly serverError = signal<string | null>(null);
