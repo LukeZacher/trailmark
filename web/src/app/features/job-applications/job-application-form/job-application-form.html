@@ -1,0 +1,66 @@
+<form [formRoot]="jobApplicationForm">
+  <label for="jobTitle">Job Title</label>
+  <input id="jobTitle" type="text" [formField]="jobApplicationForm.jobTitle" />
+  <app-field-error [field]="jobApplicationForm.jobTitle" />
+
+  <label for="employerName">Employer</label>
+  <input id="employerName" type="text" [formField]="jobApplicationForm.employerName" />
+  <app-field-error [field]="jobApplicationForm.employerName" />
+
+  <label for="jobPostingUrl">Job Posting URL</label>
+  <input id="jobPostingUrl" type="text" [formField]="jobApplicationForm.jobPostingUrl" />
+  <app-field-error [field]="jobApplicationForm.jobPostingUrl" />
+
+  <label for="location">Location</label>
+  <input id="location" type="text" [formField]="jobApplicationForm.location" />
+  <app-field-error [field]="jobApplicationForm.location" />
+
+  <label for="notes">Notes</label>
+  <textarea id="notes" rows="4" [formField]="jobApplicationForm.notes"></textarea>
+  <app-field-error [field]="jobApplicationForm.notes" />
+
+  <label for="applicationStatus">Application Status</label>
+  <select id="applicationStatus" [formField]="jobApplicationForm.applicationStatus">
+    @for (value of applicationStatuses; track value) {
+      <option [value]="value">{{ applicationStatusLabels[value] }}</option>
+    }
+  </select>
+  <app-field-error [field]="jobApplicationForm.applicationStatus" />
+
+  <label for="workEnvironment">Work Environment</label>
+  <select id="workEnvironment" [formField]="jobApplicationForm.workEnvironment">
+    <option value="">—</option>
+    @for (value of workEnvironments; track value) {
+      <option [value]="value">{{ workEnvironmentLabels[value] }}</option>
+    }
+  </select>
+  <app-field-error [field]="jobApplicationForm.workEnvironment" />
+
+  <label for="employmentType">Employment Type</label>
+  <select id="employmentType" [formField]="jobApplicationForm.employmentType">
+    <option value="">—</option>
+    @for (value of employmentTypes; track value) {
+      <option [value]="value">{{ employmentTypeLabels[value] }}</option>
+    }
+  </select>
+  <app-field-error [field]="jobApplicationForm.employmentType" />
+
+  <label for="salaryPeriod">Salary Period</label>
+  <select id="salaryPeriod" [formField]="jobApplicationForm.salaryPeriod">
+    <option value="">—</option>
+    @for (value of salaryPeriods; track value) {
+      <option [value]="value">{{ salaryPeriodLabels[value] }}</option>
+    }
+  </select>
+  <app-field-error [field]="jobApplicationForm.salaryPeriod" />
+
+  @if (serverError()) {
+    <p>{{ serverError() }}</p>
+  }
+
+  <button type="submit" [disabled]="jobApplicationForm().submitting()">
+    {{ jobApplicationForm().submitting() ? 'Creating...' : 'Create' }}
+  </button>
+
+  <a routerLink="/job-applications">Cancel</a>
+</form>

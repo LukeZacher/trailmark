@@ -14,6 +14,14 @@ export const routes: Routes = [
     canActivate: [guestGuard],
   },
   {
+    path: 'job-applications/new',
+    loadComponent: () =>
+      import('./features/job-applications/job-application-form/job-application-form').then(
+        (m) => m.JobApplicationForm,
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'job-applications',
     loadComponent: () =>
       import('./features/job-applications/job-application-list/job-application-list').then(
