@@ -8,7 +8,7 @@
   <app-field-error [field]="jobApplicationForm.employerName" />
 
   <label for="jobPostingUrl">Job Posting URL</label>
-  <input id="jobPostingUrl" type="text" [formField]="jobApplicationForm.jobPostingUrl" />
+  <input id="jobPostingUrl" type="url" [formField]="jobApplicationForm.jobPostingUrl" />
   <app-field-error [field]="jobApplicationForm.jobPostingUrl" />
 
   <label for="location">Location</label>
@@ -25,7 +25,7 @@
       <option [value]="value">{{ applicationStatusLabels[value] }}</option>
     }
   </select>
-  <app-field-error [field]="jobApplicationForm.applicationStatus" />
+  <!-- <app-field-error [field]="jobApplicationForm.applicationStatus" /> -->
 
   <label for="workEnvironment">Work Environment</label>
   <select id="workEnvironment" [formField]="jobApplicationForm.workEnvironment">
@@ -53,6 +53,18 @@
     }
   </select>
   <app-field-error [field]="jobApplicationForm.salaryPeriod" />
+
+  <label for="appliedOn">Applied On</label>
+  <input id="appliedOn" type="date" [formField]="jobApplicationForm.appliedOn" />
+  <app-field-error [field]="jobApplicationForm.appliedOn" />
+
+  <label for="minSalary">Min Salary</label>
+  <input id="minSalary" type="number" step="0.01" [formField]="jobApplicationForm.minSalary" />
+  <app-field-error [field]="jobApplicationForm.minSalary" />
+
+  <label for="maxSalary">Max Salary</label>
+  <input id="maxSalary" type="number" step="0.01" [formField]="jobApplicationForm.maxSalary" />
+  <app-field-error [field]="jobApplicationForm.maxSalary" />
 
   @if (serverError()) {
     <p>{{ serverError() }}</p>
