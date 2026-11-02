@@ -11,13 +11,13 @@ public sealed class CreateJobApplicationRequestValidator
 
         RuleFor(x => x.EmployerName).NotEmpty().MaximumLength(200);
 
-        RuleFor(x => x.JobPostingUrl).MaximumLength(2000);
+        RuleFor(x => x.JobPostingUrl)
+            .MaximumLength(2000)
+            .Must(JobApplicationRules.BeAValidUrl)
+            .When(x => x.JobPostingUrl is not null);
 
         RuleFor(x => x.AppliedOn)
-            .InclusiveBetween(
-                DateOnly.FromDateTime(DateTime.UtcNow).AddYears(-5),
-                DateOnly.FromDateTime(DateTime.UtcNow).AddYears(1)
-            )
+            .Must(JobApplicationRules.BeWithinAppliedOnWindow)
             .When(x => x.AppliedOn is not null);
 
         RuleFor(x => x.Location).MaximumLength(200);
