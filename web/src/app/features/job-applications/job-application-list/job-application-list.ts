@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { JobApplications } from '../job-applications';
 
 @Component({
-  imports: [],
+  imports: [RouterLink],
   selector: 'app-job-application-list',
   styleUrl: './job-application-list.scss',
   templateUrl: './job-application-list.html',
