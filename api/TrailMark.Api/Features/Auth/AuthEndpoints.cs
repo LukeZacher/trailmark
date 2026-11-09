@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using TrailMark.Api.Filters;
 using TrailMark.Infrastructure.Persistence.Identity;
 
 namespace TrailMark.Api.Features.Auth;
@@ -11,22 +12,41 @@ public static class AuthEndpoints
     {
         RouteGroupBuilder group = app.MapGroup("/auth");
 
-        group.MapPost(
-            "/register",
-            async (RegisterRequest request, UserManager<AppUser> userManager) =>
-            {
-                AppUser user = new AppUser { UserName = request.Email, Email = request.Email };
-
-                IdentityResult result = await userManager.CreateAsync(user, request.Password);
-
-                if (!result.Succeeded)
+        group
+            .MapPost(
+                "/register",
+                async Task<Results<Ok<AuthResponse>, ValidationProblem>> (
+                    RegisterRequest request,
+                    UserManager<AppUser> userManager,
+                    SignInManager<AppUser> signInManager
+                ) =>
                 {
-                    return Results.BadRequest(result.Errors);
-                }
+                    AppUser user = new AppUser { UserName = request.Email, Email = request.Email };
 
-                return Results.Ok();
-            }
-        );
+                    IdentityResult result = await userManager.CreateAsync(user, request.Password);
+
+                    if (!result.Succeeded)
+                    {
+                        Dictionary<string, string[]> errors = result
+                            .Errors.Where(error => error.Code != "DuplicateUserName") // Temp fix for duplicate email/username already taken error responses
+                            .GroupBy(error =>
+                                error.Code.StartsWith("Password", StringComparison.Ordinal)
+                                    ? "Password"
+                                    : "Email"
+                            )
+                            .ToDictionary(
+                                group => group.Key,
+                                group => group.Select(error => error.Description).ToArray()
+                            );
+                        return TypedResults.ValidationProblem(errors);
+                    }
+
+                    await signInManager.SignInAsync(user, isPersistent: false);
+
+                    return TypedResults.Ok(user.ToAuthResponse());
+                }
+            )
+            .AddEndpointFilter<ValidationFilter<RegisterRequest>>();
 
         group.MapPost(
             "/login",
