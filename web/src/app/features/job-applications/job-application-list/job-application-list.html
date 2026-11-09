@@ -1,4 +1,7 @@
-<a routerLink="/job-applications/new">New application</a>
+<a routerLink="/job-applications/new" class="new-application">New application</a>
+@if (deleteError()) {
+  <p>{{ deleteError() }}</p>
+}
 @if (jobApplications.isLoading()) {
   <p>Loading...</p>
 } @else if (jobApplications.error()) {
@@ -6,7 +9,17 @@
 } @else {
   <ul>
     @for (application of jobApplications.value(); track application.id) {
-      <li>{{ application.jobTitle }} - {{ application.employerName }}</li>
+      <li>
+        <span class="title">{{ application.jobTitle }} - {{ application.employerName }}</span>
+        @if (pendingDeleteId() === application.id) {
+          <span>Delete this application?</span>
+          <button type="button" (click)="confirmDelete(application.id)">Yes, delete</button>
+          <button type="button" (click)="cancelDelete()">Cancel</button>
+        } @else {
+          <a [routerLink]="['/job-applications', application.id, 'edit']">Edit</a>
+          <button type="button" (click)="requestDelete(application.id)">Delete</button>
+        }
+      </li>
     } @empty {
       <li>No applications yet.</li>
     }
