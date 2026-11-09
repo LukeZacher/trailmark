@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import {
   FormField,
   FormRoot,
@@ -10,7 +10,7 @@ import {
   validate,
 } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
 
 import { FieldError } from '../../../shared/field-error/field-error';
 import {
@@ -26,6 +26,8 @@ import {
 import {
   JobApplicationFormModel,
   toCreateJobApplicationRequest,
+  toJobApplicationFormModel,
+  toUpdateJobApplicationRequest,
 } from '../job-application-form-model';
 import { JobApplications } from '../job-applications';
 
@@ -35,7 +37,7 @@ import { JobApplications } from '../job-applications';
   styleUrl: './job-application-form.scss',
   templateUrl: './job-application-form.html',
 })
-export class JobApplicationForm {
+export class JobApplicationForm implements OnInit {
   private readonly router = inject(Router);
   private readonly jobApplicationsService = inject(JobApplications);
 
@@ -48,7 +50,24 @@ export class JobApplicationForm {
   protected readonly workEnvironments = WORK_ENVIRONMENTS;
   protected readonly workEnvironmentLabels = WORK_ENVIRONMENT_LABELS;
 
+  protected readonly id = input<number | undefined, string | undefined>(undefined, {
+    transform: (value) => (value ? Number(value) : undefined),
+  });
+
+  protected readonly isLoading = signal(false);
   protected readonly serverError = signal<string | null>(null);
+  protected readonly loadError = signal<string | null>(null);
+
+  protected readonly creating = computed(() => {
+    return this.id() === undefined;
+  });
+  protected readonly submitLabel = computed(() => {
+    if (this.jobApplicationForm().submitting()) {
+      return this.creating() ? 'Creating...' : 'Saving...';
+    }
+
+    return this.creating() ? 'Create' : 'Save';
+  });
 
   private readonly model = signal<JobApplicationFormModel>({
     jobTitle: '',
@@ -131,18 +150,45 @@ export class JobApplicationForm {
           this.serverError.set(null);
 
           try {
-            await firstValueFrom(
-              this.jobApplicationsService.create(toCreateJobApplicationRequest(this.model())),
-            );
+            const id = this.id();
+
+            if (id === undefined) {
+              await firstValueFrom(
+                this.jobApplicationsService.create(toCreateJobApplicationRequest(this.model())),
+              );
+            } else {
+              await firstValueFrom(
+                this.jobApplicationsService.update(id, toUpdateJobApplicationRequest(this.model())),
+              );
+            }
+
             await this.router.navigateByUrl('/job-applications');
           } catch (error) {
-            this.serverError.set(
-              'An error occurred creating your job application. Please try again later.',
-            );
+            this.serverError.set('Could not save your job application. Please try again later.');
             console.error(error);
           }
         },
       },
     },
   );
+
+  ngOnInit(): void {
+    const id = this.id();
+
+    if (id === undefined) {
+      return;
+    }
+
+    this.isLoading.set(true);
+
+    this.jobApplicationsService
+      .getById(id)
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.model.set(toJobApplicationFormModel(response));
+        },
+        error: () => this.loadError.set('Could not load this application.'),
+      });
+  }
 }

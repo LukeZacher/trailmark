@@ -1,78 +1,123 @@
-<form [formRoot]="jobApplicationForm">
-  <label for="jobTitle">Job Title</label>
-  <input id="jobTitle" type="text" [formField]="jobApplicationForm.jobTitle" />
-  <app-field-error [field]="jobApplicationForm.jobTitle" />
+<h2>{{ creating() ? 'New application' : 'Edit application' }}</h2>
+@if (isLoading()) {
+  <p>Loading...</p>
+} @else if (loadError()) {
+  <p>{{ loadError() }}</p>
+  <a routerLink="/job-applications">Back to applications</a>
+} @else {
+  <form [formRoot]="jobApplicationForm">
+    <div class="fields">
+      <div class="field">
+        <label for="jobTitle">Job Title</label>
+        <input id="jobTitle" type="text" [formField]="jobApplicationForm.jobTitle" />
+        <app-field-error [field]="jobApplicationForm.jobTitle" />
+      </div>
 
-  <label for="employerName">Employer</label>
-  <input id="employerName" type="text" [formField]="jobApplicationForm.employerName" />
-  <app-field-error [field]="jobApplicationForm.employerName" />
+      <div class="field">
+        <label for="employerName">Employer</label>
+        <input id="employerName" type="text" [formField]="jobApplicationForm.employerName" />
+        <app-field-error [field]="jobApplicationForm.employerName" />
+      </div>
 
-  <label for="jobPostingUrl">Job Posting URL</label>
-  <input id="jobPostingUrl" type="url" [formField]="jobApplicationForm.jobPostingUrl" />
-  <app-field-error [field]="jobApplicationForm.jobPostingUrl" />
+      <div class="field">
+        <label for="jobPostingUrl">Job Posting URL</label>
+        <input id="jobPostingUrl" type="url" [formField]="jobApplicationForm.jobPostingUrl" />
+        <app-field-error [field]="jobApplicationForm.jobPostingUrl" />
+      </div>
 
-  <label for="location">Location</label>
-  <input id="location" type="text" [formField]="jobApplicationForm.location" />
-  <app-field-error [field]="jobApplicationForm.location" />
+      <div class="field">
+        <label for="location">Location</label>
+        <input id="location" type="text" [formField]="jobApplicationForm.location" />
+        <app-field-error [field]="jobApplicationForm.location" />
+      </div>
 
-  <label for="notes">Notes</label>
-  <textarea id="notes" rows="4" [formField]="jobApplicationForm.notes"></textarea>
-  <app-field-error [field]="jobApplicationForm.notes" />
+      <div class="field">
+        <label for="notes">Notes</label>
+        <textarea id="notes" rows="4" [formField]="jobApplicationForm.notes"></textarea>
+        <app-field-error [field]="jobApplicationForm.notes" />
+      </div>
 
-  <label for="applicationStatus">Application Status</label>
-  <select id="applicationStatus" [formField]="jobApplicationForm.applicationStatus">
-    @for (value of applicationStatuses; track value) {
-      <option [value]="value">{{ applicationStatusLabels[value] }}</option>
+      <div class="field">
+        <label for="applicationStatus">Application Status</label>
+        <select id="applicationStatus" [formField]="jobApplicationForm.applicationStatus">
+          @for (value of applicationStatuses; track value) {
+            <option [value]="value">{{ applicationStatusLabels[value] }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="workEnvironment">Work Environment</label>
+        <select id="workEnvironment" [formField]="jobApplicationForm.workEnvironment">
+          <option value="">—</option>
+          @for (value of workEnvironments; track value) {
+            <option [value]="value">{{ workEnvironmentLabels[value] }}</option>
+          }
+        </select>
+        <app-field-error [field]="jobApplicationForm.workEnvironment" />
+      </div>
+
+      <div class="field">
+        <label for="employmentType">Employment Type</label>
+        <select id="employmentType" [formField]="jobApplicationForm.employmentType">
+          <option value="">—</option>
+          @for (value of employmentTypes; track value) {
+            <option [value]="value">{{ employmentTypeLabels[value] }}</option>
+          }
+        </select>
+        <app-field-error [field]="jobApplicationForm.employmentType" />
+      </div>
+
+      <div class="field">
+        <label for="appliedOn">Applied On</label>
+        <input id="appliedOn" type="date" [formField]="jobApplicationForm.appliedOn" />
+        <app-field-error [field]="jobApplicationForm.appliedOn" />
+      </div>
+
+      <div class="field">
+        <label for="minSalary">Min Salary</label>
+        <input
+          id="minSalary"
+          type="number"
+          step="0.01"
+          [formField]="jobApplicationForm.minSalary"
+        />
+        <app-field-error [field]="jobApplicationForm.minSalary" />
+      </div>
+
+      <div class="field">
+        <label for="maxSalary">Max Salary</label>
+        <input
+          id="maxSalary"
+          type="number"
+          step="0.01"
+          [formField]="jobApplicationForm.maxSalary"
+        />
+        <app-field-error [field]="jobApplicationForm.maxSalary" />
+      </div>
+
+      <div class="field">
+        <label for="salaryPeriod">Salary Period</label>
+        <select id="salaryPeriod" [formField]="jobApplicationForm.salaryPeriod">
+          <option value="">—</option>
+          @for (value of salaryPeriods; track value) {
+            <option [value]="value">{{ salaryPeriodLabels[value] }}</option>
+          }
+        </select>
+        <app-field-error [field]="jobApplicationForm.salaryPeriod" />
+      </div>
+    </div>
+
+    @if (serverError()) {
+      <p>{{ serverError() }}</p>
     }
-  </select>
-  <!-- <app-field-error [field]="jobApplicationForm.applicationStatus" /> -->
 
-  <label for="workEnvironment">Work Environment</label>
-  <select id="workEnvironment" [formField]="jobApplicationForm.workEnvironment">
-    <option value="">—</option>
-    @for (value of workEnvironments; track value) {
-      <option [value]="value">{{ workEnvironmentLabels[value] }}</option>
-    }
-  </select>
-  <app-field-error [field]="jobApplicationForm.workEnvironment" />
+    <div class="btn-row">
+      <button type="submit" [disabled]="jobApplicationForm().submitting()">
+        {{ submitLabel() }}
+      </button>
 
-  <label for="employmentType">Employment Type</label>
-  <select id="employmentType" [formField]="jobApplicationForm.employmentType">
-    <option value="">—</option>
-    @for (value of employmentTypes; track value) {
-      <option [value]="value">{{ employmentTypeLabels[value] }}</option>
-    }
-  </select>
-  <app-field-error [field]="jobApplicationForm.employmentType" />
-
-  <label for="salaryPeriod">Salary Period</label>
-  <select id="salaryPeriod" [formField]="jobApplicationForm.salaryPeriod">
-    <option value="">—</option>
-    @for (value of salaryPeriods; track value) {
-      <option [value]="value">{{ salaryPeriodLabels[value] }}</option>
-    }
-  </select>
-  <app-field-error [field]="jobApplicationForm.salaryPeriod" />
-
-  <label for="appliedOn">Applied On</label>
-  <input id="appliedOn" type="date" [formField]="jobApplicationForm.appliedOn" />
-  <app-field-error [field]="jobApplicationForm.appliedOn" />
-
-  <label for="minSalary">Min Salary</label>
-  <input id="minSalary" type="number" step="0.01" [formField]="jobApplicationForm.minSalary" />
-  <app-field-error [field]="jobApplicationForm.minSalary" />
-
-  <label for="maxSalary">Max Salary</label>
-  <input id="maxSalary" type="number" step="0.01" [formField]="jobApplicationForm.maxSalary" />
-  <app-field-error [field]="jobApplicationForm.maxSalary" />
-
-  @if (serverError()) {
-    <p>{{ serverError() }}</p>
-  }
-
-  <button type="submit" [disabled]="jobApplicationForm().submitting()">
-    {{ jobApplicationForm().submitting() ? 'Creating...' : 'Create' }}
-  </button>
-
-  <a routerLink="/job-applications">Cancel</a>
-</form>
+      <a routerLink="/job-applications">Cancel</a>
+    </div>
+  </form>
+}
